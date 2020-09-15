@@ -14,6 +14,8 @@
 #include <QMap>
 #include <QStandardPaths>
 
+#include "applicationinfo.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE

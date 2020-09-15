@@ -1,3 +1,5 @@
 <RCC>
-    <qresource prefix="/imgs"/>
+    <qresource prefix="/imgs">
+        <file>C:/Users/Carolina/Desktop/Glamorg_Logo.png</file>
+    </qresource>
 </RCC>

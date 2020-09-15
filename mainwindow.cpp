@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Open the desired file
     QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
 
-    QString fileName = QFileDialog::getOpenFileName(this, "Open File", desktopPath);
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), desktopPath, tr("JSON(*.json);;Config(*.config);;ini(*.ini);;Text(*.txt);;All File(*)"));
     QFile file(fileName);
     currentFile = fileName;
 
@@ -56,19 +56,25 @@ MainWindow::MainWindow(QWidget *parent)
         ui->verticalLayout->addLayout(settingsBox);
     }
 
+    ApplicationInfo* appInfo = new ApplicationInfo("Random", "C:/Users/Carolina/Desktop/Glamorg_Logo.png", "Test");
+    ui->label->setPixmap(appInfo->GetIcon().scaled(130, 130, Qt::KeepAspectRatio));
     ui->verticalLayout->addStretch();
 }
 
 QHBoxLayout* MainWindow::CreateSettingLabel(QString settingName, QString settingValue) {
+    // Setup label
     QLabel* label = new QLabel(settingName);
     label->setMinimumWidth(100);
 
+    // Setup line edit
     QLineEdit* lineEdit = new QLineEdit;
     lineEdit->setText(settingValue);
     label->setBuddy(lineEdit);
 
+    // Add it to the map to be tracked
     parameterBoxesMap.insert(lineEdit, settingName);
 
+    // Put them together in a layout
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(label);
     layout->addWidget(lineEdit);
@@ -93,9 +99,11 @@ void MainWindow::on_saveButton_clicked()
         return;
     }
 
+    // Setup the text stream
     QTextStream out(&file);
     QString text = "";
 
+    // Write to the file
     for (auto parameter : parameterBoxesMap.keys()) {
         text += parameterBoxesMap[parameter] + "=" + parameter->text() + "\n";
     }
@@ -117,9 +125,11 @@ void MainWindow::on_saveAsButton_clicked()
         return;
     }
 
+    // Setup the text stream
     QTextStream out(&file);
     QString text = "";
 
+    // Write to the file
     for (auto parameter : parameterBoxesMap.keys()) {
         text += parameterBoxesMap[parameter] + "=" + parameter->text() + "\n";
     }
