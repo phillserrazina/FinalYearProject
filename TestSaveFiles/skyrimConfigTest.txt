@@ -1,0 +1,6 @@
+hotel=trivago
+shadows=performance
+quality=bad
+LODs=on
+lightingIntensity=40
+AA=on

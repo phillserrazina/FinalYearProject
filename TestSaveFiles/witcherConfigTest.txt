@@ -1,0 +1,3 @@
+one hit kill=wot
+best swords=off
+easy mode=on

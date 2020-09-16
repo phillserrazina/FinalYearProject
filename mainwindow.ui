@@ -26,6 +26,9 @@
     <layout class="QVBoxLayout" name="settingsLayout"/>
    </widget>
    <widget class="QPushButton" name="saveButton">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>550</x>
@@ -61,6 +64,19 @@
      </rect>
     </property>
     <layout class="QVBoxLayout" name="appOptionsLayout"/>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>310</y>
+      <width>130</width>
+      <height>130</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

@@ -34,6 +34,8 @@ private slots:
 
     void on_saveAsButton_clicked();
 
+    void SetupSettings(QString);
+
 private:
     // VARIABLES
     Ui::MainWindow *ui;
@@ -43,10 +45,11 @@ private:
     // FUNCTIONS
 
     void SetupAppOptions(QVector<ApplicationInfo>);
-    void SetupSettings(QString);
 
     QHBoxLayout* CreateSettingLabel(QString, QString);
     QPushButton* CreateAppOptionButton(ApplicationInfo);
+
+    void ClearLayout(QLayout*);
 
 };
 

@@ -7,18 +7,24 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
-    QString file = QFileDialog::getOpenFileName(this, tr("Open File"), desktopPath, tr("JSON(*.json);;Config(*.config);;ini(*.ini);;Text(*.txt);;All File(*)"));
+    //QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    //QString file = QFileDialog::getOpenFileName(this, tr("Open File"), desktopPath, tr("JSON(*.json);;Config(*.config);;ini(*.ini);;Text(*.txt);;All File(*)"));
     //SetupSettings(file);
 
+    ApplicationInfo skyrimInfo("Skyrim", ":/Resources/Images/Skyrim_Logo.jpg", ":/Resources/TestSaveFiles/skyrimConfigTest.txt");
+    ApplicationInfo witcherInfo("Witcher", ":/Resources/Images/Witcher3_Logo.jpg", ":/Resources/TestSaveFiles/witcherConfigTest.txt");
+    ApplicationInfo lolInfo("League of Legends", ":/Resources/Images/League_of_Legends_Logo.jpg", ":/Resources/TestSaveFiles/lolConfigTest.txt");
 
-    ApplicationInfo skyrimInfo("Skyrim", "C:/Users/Carolina/Desktop/Glamorg_Logo.png", file);
-    ApplicationInfo witcherInfo("Witcher", "C:/Users/Carolina/Desktop/Glamorg_Logo.png", file);
-    ApplicationInfo lolInfo("League of Legends", "C:/Users/Carolina/Desktop/Glamorg_Logo.png", file);
-    //ui->label->setPixmap(appInfo->GetIcon().scaled(130, 130, Qt::KeepAspectRatio));
-    ui->appOptionsLayout->addWidget(CreateAppOptionButton(skyrimInfo));
+    QVector<ApplicationInfo> list;
+    list.push_back(skyrimInfo);
+    list.push_back(witcherInfo);
+    list.push_back(lolInfo);
 
+    SetupAppOptions(list);
 
+    //ui->label->setPixmap(skyrimInfo.GetIcon().scaled(130, 130, Qt::KeepAspectRatio));
+    //ui->appOptionsLayout->addWidget(CreateAppOptionButton(skyrimInfo));
+    //ui->appOptionsLayout->addWidget(CreateAppOptionButton(witcherInfo));
 }
 
 MainWindow::~MainWindow()
@@ -36,7 +42,23 @@ void MainWindow::SetupAppOptions(QVector<ApplicationInfo> list) {
     ui->appOptionsLayout->addStretch();
 }
 
+void MainWindow::ClearLayout(QLayout* layout) {
+    QLayoutItem *item;
+    while((item = layout->takeAt(0))) {
+        if (item->layout()) {
+            ClearLayout(item->layout());
+            delete item->layout();
+        }
+        if (item->widget()) {
+           delete item->widget();
+        }
+        delete item;
+    }
+}
+
 void MainWindow::SetupSettings(QString path) {
+    //ClearLayout(ui->settingsLayout);
+
     // Open the desired file
     QFile file(path);
     currentFile = path;
@@ -54,7 +76,7 @@ void MainWindow::SetupSettings(QString path) {
 
     while (!in.atEnd()) {
         QString line = in.readLine();
-        if (line[0] == '[') continue;
+        if (line[0] == '[' || line.isEmpty()) continue;
         rawParametersList.push_back(line);
     }
 
