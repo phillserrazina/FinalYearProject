@@ -7,12 +7,39 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Open the desired file
     QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    QString file = QFileDialog::getOpenFileName(this, tr("Open File"), desktopPath, tr("JSON(*.json);;Config(*.config);;ini(*.ini);;Text(*.txt);;All File(*)"));
+    //SetupSettings(file);
 
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), desktopPath, tr("JSON(*.json);;Config(*.config);;ini(*.ini);;Text(*.txt);;All File(*)"));
-    QFile file(fileName);
-    currentFile = fileName;
+
+    ApplicationInfo skyrimInfo("Skyrim", "C:/Users/Carolina/Desktop/Glamorg_Logo.png", file);
+    ApplicationInfo witcherInfo("Witcher", "C:/Users/Carolina/Desktop/Glamorg_Logo.png", file);
+    ApplicationInfo lolInfo("League of Legends", "C:/Users/Carolina/Desktop/Glamorg_Logo.png", file);
+    //ui->label->setPixmap(appInfo->GetIcon().scaled(130, 130, Qt::KeepAspectRatio));
+    ui->appOptionsLayout->addWidget(CreateAppOptionButton(skyrimInfo));
+
+
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+// ========= FUNCTIONS ==========
+
+void MainWindow::SetupAppOptions(QVector<ApplicationInfo> list) {
+    for (auto app : list) {
+        ui->appOptionsLayout->addWidget(CreateAppOptionButton(app));
+    }
+
+    ui->appOptionsLayout->addStretch();
+}
+
+void MainWindow::SetupSettings(QString path) {
+    // Open the desired file
+    QFile file(path);
+    currentFile = path;
 
     // Check for IO Errors
     if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
@@ -53,12 +80,10 @@ MainWindow::MainWindow(QWidget *parent)
     // Add Found Parameters to the layout
     for (auto key : parametersMap.keys()) {
         auto settingsBox = CreateSettingLabel(key, parametersMap[key]);
-        ui->verticalLayout->addLayout(settingsBox);
+        ui->settingsLayout->addLayout(settingsBox);
     }
 
-    ApplicationInfo* appInfo = new ApplicationInfo("Random", "C:/Users/Carolina/Desktop/Glamorg_Logo.png", "Test");
-    ui->label->setPixmap(appInfo->GetIcon().scaled(130, 130, Qt::KeepAspectRatio));
-    ui->verticalLayout->addStretch();
+    ui->settingsLayout->addStretch();
 }
 
 QHBoxLayout* MainWindow::CreateSettingLabel(QString settingName, QString settingValue) {
@@ -82,11 +107,20 @@ QHBoxLayout* MainWindow::CreateSettingLabel(QString settingName, QString setting
     return layout;
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
+QPushButton* MainWindow::CreateAppOptionButton(ApplicationInfo appInfo) {
+    // Setup Button
+    QPushButton* button = new QPushButton(appInfo.GetName());
+
+    QSignalMapper* mapper = new QSignalMapper();
+    connect(mapper, SIGNAL(mapped(QString)), this, SLOT(SetupSettings(QString)));
+
+    connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
+    mapper->setMapping(button, appInfo.GetFilePath());
+
+    return button;
 }
 
+// ========= SLOTS ========
 
 void MainWindow::on_saveButton_clicked()
 {

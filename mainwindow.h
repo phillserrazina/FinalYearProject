@@ -13,6 +13,7 @@
 #include <QVector>
 #include <QMap>
 #include <QStandardPaths>
+#include <QSignalMapper>
 
 #include "applicationinfo.h"
 
@@ -28,17 +29,25 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    QHBoxLayout* CreateSettingLabel(QString, QString);
-
 private slots:
     void on_saveButton_clicked();
 
     void on_saveAsButton_clicked();
 
 private:
+    // VARIABLES
     Ui::MainWindow *ui;
     QString currentFile = "";
     QMap<QLineEdit*, QString> parameterBoxesMap;
+
+    // FUNCTIONS
+
+    void SetupAppOptions(QVector<ApplicationInfo>);
+    void SetupSettings(QString);
+
+    QHBoxLayout* CreateSettingLabel(QString, QString);
+    QPushButton* CreateAppOptionButton(ApplicationInfo);
+
 };
 
 #endif // MAINWINDOW_H

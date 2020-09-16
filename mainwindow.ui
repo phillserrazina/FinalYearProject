@@ -23,7 +23,7 @@
       <height>461</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout"/>
+    <layout class="QVBoxLayout" name="settingsLayout"/>
    </widget>
    <widget class="QPushButton" name="saveButton">
     <property name="geometry">
@@ -51,18 +51,16 @@
      <string>Save As</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QWidget" name="verticalLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>120</x>
-      <y>280</y>
-      <width>130</width>
-      <height>130</height>
+      <x>10</x>
+      <y>10</y>
+      <width>271</width>
+      <height>491</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Image Label</string>
-    </property>
+    <layout class="QVBoxLayout" name="appOptionsLayout"/>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
