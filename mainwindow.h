@@ -42,6 +42,8 @@ private:
     QString currentFile = "";
     QMap<QLineEdit*, QString> parameterBoxesMap;
 
+    QVector<ApplicationInfo> allApps;
+
     // FUNCTIONS
 
     void SetupAppOptions(QVector<ApplicationInfo>);

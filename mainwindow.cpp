@@ -6,25 +6,15 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->settingsGroupBox->setVisible(false);
 
-    //QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
-    //QString file = QFileDialog::getOpenFileName(this, tr("Open File"), desktopPath, tr("JSON(*.json);;Config(*.config);;ini(*.ini);;Text(*.txt);;All File(*)"));
-    //SetupSettings(file);
+    allApps = {
+        ApplicationInfo("Skyrim", ":/Resources/Images/Skyrim_Logo.jpg", ":/Resources/TestSaveFiles/skyrimConfigTest.txt"),
+        ApplicationInfo("Witcher", ":/Resources/Images/Witcher3_Logo.jpg", ":/Resources/TestSaveFiles/witcherConfigTest.txt"),
+        ApplicationInfo("League of Legends", ":/Resources/Images/League_of_Legends_Logo.jpg", ":/Resources/TestSaveFiles/lolConfigTest.txt")
+    };
 
-    ApplicationInfo skyrimInfo("Skyrim", ":/Resources/Images/Skyrim_Logo.jpg", ":/Resources/TestSaveFiles/skyrimConfigTest.txt");
-    ApplicationInfo witcherInfo("Witcher", ":/Resources/Images/Witcher3_Logo.jpg", ":/Resources/TestSaveFiles/witcherConfigTest.txt");
-    ApplicationInfo lolInfo("League of Legends", ":/Resources/Images/League_of_Legends_Logo.jpg", ":/Resources/TestSaveFiles/lolConfigTest.txt");
-
-    QVector<ApplicationInfo> list;
-    list.push_back(skyrimInfo);
-    list.push_back(witcherInfo);
-    list.push_back(lolInfo);
-
-    SetupAppOptions(list);
-
-    //ui->label->setPixmap(skyrimInfo.GetIcon().scaled(130, 130, Qt::KeepAspectRatio));
-    //ui->appOptionsLayout->addWidget(CreateAppOptionButton(skyrimInfo));
-    //ui->appOptionsLayout->addWidget(CreateAppOptionButton(witcherInfo));
+    SetupAppOptions(allApps);
 }
 
 MainWindow::~MainWindow()
@@ -47,17 +37,28 @@ void MainWindow::ClearLayout(QLayout* layout) {
     while((item = layout->takeAt(0))) {
         if (item->layout()) {
             ClearLayout(item->layout());
-            delete item->layout();
+            delete item;
         }
-        if (item->widget()) {
-           delete item->widget();
+        else if (item->widget()) {
+            QWidget* widget;
+            widget = item->widget();
+            delete widget;
         }
-        delete item;
+
     }
 }
 
-void MainWindow::SetupSettings(QString path) {
-    //ClearLayout(ui->settingsLayout);
+void MainWindow::SetupSettings(QString appName) {
+    ClearLayout(ui->settingsLayout);
+
+    if (!ui->settingsGroupBox->isVisible()) ui->settingsGroupBox->setVisible(true);
+    ui->settingsGroupBox->setTitle(appName);
+
+    QString path = "";
+
+    for (auto app : allApps) {
+        if (app.GetName() == appName) path = app.GetFilePath();
+    }
 
     // Open the desired file
     QFile file(path);
@@ -137,7 +138,7 @@ QPushButton* MainWindow::CreateAppOptionButton(ApplicationInfo appInfo) {
     connect(mapper, SIGNAL(mapped(QString)), this, SLOT(SetupSettings(QString)));
 
     connect(button, SIGNAL(clicked()), mapper, SLOT(map()));
-    mapper->setMapping(button, appInfo.GetFilePath());
+    mapper->setMapping(button, appInfo.GetName());
 
     return button;
 }
