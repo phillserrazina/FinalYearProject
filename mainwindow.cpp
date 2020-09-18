@@ -9,9 +9,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->settingsGroupBox->setVisible(false);
 
     allApps = {
-        ApplicationInfo("Skyrim", ":/Resources/Images/Skyrim_Logo.jpg", ":/Resources/TestSaveFiles/skyrimConfigTest.txt"),
-        ApplicationInfo("Witcher", ":/Resources/Images/Witcher3_Logo.jpg", ":/Resources/TestSaveFiles/witcherConfigTest.txt"),
-        ApplicationInfo("League of Legends", ":/Resources/Images/League_of_Legends_Logo.jpg", ":/Resources/TestSaveFiles/lolConfigTest.txt")
+        ApplicationInfo("Skyrim", ":/Resources/Images/Skyrim_Logo.jpg", "D:/QT Projects/ConfigurateProject//TestSaveFiles/skyrimConfigTest.txt"),
+        ApplicationInfo("Witcher", ":/Resources/Images/Witcher3_Logo.jpg", "D:/QT Projects/ConfigurateProject//TestSaveFiles/witcherConfigTest.txt"),
+        ApplicationInfo("League of Legends", ":/Resources/Images/League_of_Legends_Logo.jpg", "D:/QT Projects/ConfigurateProject//TestSaveFiles/lolConfigTest.txt")
     };
 
     SetupAppOptions(allApps);
