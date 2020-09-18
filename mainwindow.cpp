@@ -132,7 +132,21 @@ QHBoxLayout* MainWindow::CreateSettingLabel(QString settingName, QString setting
 
 QPushButton* MainWindow::CreateAppOptionButton(ApplicationInfo appInfo) {
     // Setup Button
-    QPushButton* button = new QPushButton(appInfo.GetName());
+    QPushButton* button = new QPushButton(" ");
+    QIcon icon(appInfo.GetIcon());
+    button->setIcon(icon);
+    button->setIconSize(QSize(30, 30));
+    button->setStyleSheet("text-align:left");
+    button->setLayout(new QGridLayout);
+
+    QLabel* textLabel = new QLabel(appInfo.GetName());
+    QFont font("Arial", 10, QFont::Bold);
+    textLabel->setFont(font);
+
+    textLabel->setAlignment(Qt::AlignCenter | Qt::AlignVCenter); // or center
+    textLabel->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+
+    button->layout()->addWidget(textLabel);
 
     QSignalMapper* mapper = new QSignalMapper();
     connect(mapper, SIGNAL(mapped(QString)), this, SLOT(SetupSettings(QString)));
