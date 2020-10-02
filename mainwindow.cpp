@@ -9,9 +9,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->settingsGroupBox->setVisible(false);
 
     allApps = {
-        ApplicationInfo("Skyrim", ":/Resources/Images/Skyrim_Logo.jpg", "D:/QT Projects/ConfigurateProject//TestSaveFiles/skyrimConfigTest.txt"),
+        ApplicationInfo("Skyrim", ":/Resources/Images/Skyrim_Logo.jpg", "D:/QT Projects/ConfigurateProject//TestSaveFiles/skyrimConfigTest.ini"),
         ApplicationInfo("Witcher", ":/Resources/Images/Witcher3_Logo.jpg", "D:/QT Projects/ConfigurateProject//TestSaveFiles/witcherConfigTest.txt"),
-        ApplicationInfo("League of Legends", ":/Resources/Images/League_of_Legends_Logo.jpg", "D:/QT Projects/ConfigurateProject//TestSaveFiles/lolConfigTest.txt")
+        ApplicationInfo("League of Legends", ":/Resources/Images/League_of_Legends_Logo.jpg", "D:/QT Projects/ConfigurateProject//TestSaveFiles/lolConfigTest.txt"),
+        ApplicationInfo("Sun Rings", ":/Resources/Images/League_of_Legends_Logo.jpg" , "D:/QT Projects/ConfigurateProject//TestSaveFiles/sunRingsTest.json")
     };
 
     SetupAppOptions(allApps);
@@ -49,55 +50,41 @@ void MainWindow::ClearLayout(QLayout* layout) {
 }
 
 void MainWindow::SetupSettings(QString appName) {
-    ClearLayout(ui->settingsLayout);
-
     if (!ui->settingsGroupBox->isVisible()) ui->settingsGroupBox->setVisible(true);
     ui->settingsGroupBox->setTitle(appName);
 
     QString path = "";
 
     for (auto app : allApps) {
-        if (app.GetName() == appName) path = app.GetFilePath();
+        if (app.GetName() == appName) {
+            currentApplication = app;
+            break;
+        }
     }
 
-    // Open the desired file
-    QFile file(path);
-    currentFile = path;
+    path = currentApplication.GetFilePath();
+    BuildSettingsWidget(path);
+}
 
-    // Check for IO Errors
-    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot Open File: " + file.errorString());
+void MainWindow::BuildSettingsWidget(QString filePath) {
+    // Clear out current layout
+    ClearLayout(ui->settingsLayout);
+
+    // Map where the params will be stored
+    QMap<QString, QString> parametersMap;
+
+    // Check for file validity and parse it
+    try {
+        parametersMap = CustomParsers::Parse(filePath);
+    }  catch (...) {
+        if (ui->settingsGroupBox->isVisible()) ui->settingsGroupBox->setVisible(false);
+        QMessageBox::warning(this, "Warning", "Unsupported File Type");
+        currentFile = "";
         return;
     }
 
-    // Read lines into a list
-    QTextStream in(&file);
-    QVector<QString> rawParametersList;
-    QMap<QString, QString> parametersMap;
-
-    while (!in.atEnd()) {
-        QString line = in.readLine();
-        if (line[0] == '[' || line.isEmpty()) continue;
-        rawParametersList.push_back(line);
-    }
-
-    // Close the list
-    file.close();
-
-    // Split the line list into parameters and put them in a map
-    QString splitter = "=";
-
-    for (auto parameter : rawParametersList) {
-        QString key;
-        QString value;
-
-        QStringList split = parameter.split(splitter);
-        key = split.value(0);
-        value = split.value(1);
-
-        parametersMap.insert(key, value);
-    }
-
+    currentFile = filePath;
+    // Reset the Box-Parameter Link Map
     parameterBoxesMap.clear();
 
     // Add Found Parameters to the layout
@@ -120,7 +107,7 @@ QHBoxLayout* MainWindow::CreateSettingLabel(QString settingName, QString setting
     label->setBuddy(lineEdit);
 
     // Add it to the map to be tracked
-    parameterBoxesMap.insert(lineEdit, settingName);
+    parameterBoxesMap.insert(settingName, lineEdit);
 
     // Put them together in a layout
     QHBoxLayout *layout = new QHBoxLayout;
@@ -157,54 +144,79 @@ QPushButton* MainWindow::CreateAppOptionButton(ApplicationInfo appInfo) {
     return button;
 }
 
-// ========= SLOTS ========
+bool MainWindow::CheckLoadFileValidity(QFile& myFile) {
 
-void MainWindow::on_saveButton_clicked()
-{
-    // Open current file
-    QFile file(currentFile);
+    // Read lines into a list
+    QFile current(currentFile);
 
-    // Check for IO Errors
-    if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot Open File: " + file.errorString());
-        return;
+    if (!current.open(QIODevice::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot Open File: " + current.errorString());
+        return false;
     }
 
-    // Setup the text stream
-    QTextStream out(&file);
-    QString text = "";
+    QTextStream in(&myFile);
+    QTextStream inCurrent(&current);
+    QVector<QString> rawParametersList;
+    QVector<QString> currentParametersList;
 
-    // Write to the file
-    for (auto parameter : parameterBoxesMap.keys()) {
-        text += parameterBoxesMap[parameter] + "=" + parameter->text() + "\n";
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        if (line[0] == '[' || line.isEmpty()) continue;
+        rawParametersList.push_back(line);
     }
 
-    out << text;
-    file.close();
+    in.seek(0);
+
+    while (!inCurrent.atEnd()) {
+        QString line = inCurrent.readLine();
+        if (line[0] == '[' || line.isEmpty()) continue;
+        currentParametersList.push_back(line);
+    }
+
+    current.close();
+
+    for (int i = 0; i < currentParametersList.size(); i++) {
+        if (currentParametersList[i][0] != rawParametersList[i][0]) {
+            return false;
+        }
+
+    }
+
+    return true;
 }
 
-void MainWindow::on_saveAsButton_clicked()
+// ========= SLOTS ========
+
+void MainWindow::on_saveButton_clicked() {
+    CustomParsers::Save(currentFile, parameterBoxesMap);
+}
+
+void MainWindow::on_saveAsButton_clicked() {
+
+}
+
+void MainWindow::on_loadButton_clicked()
 {
-    // Open current file
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save"), "", tr("Text(*.txt);;All File(*)"));
+    // Open desired file
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open"), "", tr("Text(*.txt);;All File(*)"));
     if (fileName.isEmpty()) return;
+
+    // TODO: File match checks here
     QFile file(fileName);
 
     // Check for IO Errors
-    if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
+    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
         QMessageBox::warning(this, "Warning", "Cannot Open File: " + file.errorString());
         return;
     }
 
-    // Setup the text stream
-    QTextStream out(&file);
-    QString text = "";
 
-    // Write to the file
-    for (auto parameter : parameterBoxesMap.keys()) {
-        text += parameterBoxesMap[parameter] + "=" + parameter->text() + "\n";
+    if(!CheckLoadFileValidity(file)) {
+        QMessageBox::warning(this, "Warning", "Invalid File Type: Games Do Not Match");
+        file.close();
+        return;
     }
 
-    out << text;
+    BuildSettingsWidget(fileName);
     file.close();
 }

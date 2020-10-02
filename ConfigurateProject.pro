@@ -10,11 +10,13 @@ CONFIG += c++11
 
 SOURCES += \
     applicationinfo.cpp \
+    customparsers.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     applicationinfo.h \
+    customparsers.h \
     mainwindow.h
 
 FORMS += \

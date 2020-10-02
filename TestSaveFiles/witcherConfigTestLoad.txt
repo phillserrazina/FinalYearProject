@@ -1,0 +1,4 @@
+auto sword=on
+invencibility=off
+shadows=great
+lights=lit

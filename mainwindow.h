@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 
-#include <QFile>
 #include <QFileDialog>
 #include <QTextStream>
 #include <QMessageBox>
@@ -11,10 +10,10 @@
 #include <QLineEdit>
 #include <QLayout>
 #include <QVector>
-#include <QMap>
 #include <QStandardPaths>
 #include <QSignalMapper>
 
+#include "customparsers.h"
 #include "applicationinfo.h"
 
 QT_BEGIN_NAMESPACE
@@ -36,11 +35,14 @@ private slots:
 
     void SetupSettings(QString);
 
+    void on_loadButton_clicked();
+
 private:
     // VARIABLES
     Ui::MainWindow *ui;
     QString currentFile = "";
-    QMap<QLineEdit*, QString> parameterBoxesMap;
+    ApplicationInfo currentApplication;
+    QMap<QString, QLineEdit*> parameterBoxesMap;
 
     QVector<ApplicationInfo> allApps;
 
@@ -53,6 +55,8 @@ private:
 
     void ClearLayout(QLayout*);
 
+    void BuildSettingsWidget(QString);
+    bool CheckLoadFileValidity(QFile&);
 };
 
 #endif // MAINWINDOW_H

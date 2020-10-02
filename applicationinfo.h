@@ -8,6 +8,7 @@
 class ApplicationInfo
 {
 public:
+    ApplicationInfo() = default;
     ApplicationInfo(QString, QString, QString);
 
     QString GetName();

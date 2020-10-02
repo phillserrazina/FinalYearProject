@@ -1,3 +1,4 @@
-one hit kill=wot
-best swords=off
-easy mode=on
+auto sword=off
+invencibility=on
+shadows=meh
+lights=unlit

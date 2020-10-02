@@ -4,7 +4,7 @@
         <file>Images/Skyrim_Logo.jpg</file>
         <file>Images/Witcher3_Logo.jpg</file>
         <file>TestSaveFiles/lolConfigTest.txt</file>
-        <file>TestSaveFiles/skyrimConfigTest.txt</file>
         <file>TestSaveFiles/witcherConfigTest.txt</file>
+        <file>TestSaveFiles/skyrimConfigTest.ini</file>
     </qresource>
 </RCC>
