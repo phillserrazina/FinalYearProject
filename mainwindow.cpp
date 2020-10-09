@@ -8,19 +8,61 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->settingsGroupBox->setVisible(false);
 
-    allApps = {
-        ApplicationInfo("Skyrim", ":/Resources/Images/Skyrim_Logo.jpg", "D:/QT Projects/ConfigurateProject//TestSaveFiles/skyrimConfigTest.ini"),
-        ApplicationInfo("Witcher", ":/Resources/Images/Witcher3_Logo.jpg", "D:/QT Projects/ConfigurateProject//TestSaveFiles/witcherConfigTest.txt"),
-        ApplicationInfo("League of Legends", ":/Resources/Images/League_of_Legends_Logo.jpg", "D:/QT Projects/ConfigurateProject//TestSaveFiles/lolConfigTest.txt"),
-        ApplicationInfo("Sun Rings", ":/Resources/Images/League_of_Legends_Logo.jpg" , "D:/QT Projects/ConfigurateProject//TestSaveFiles/sunRingsTest.json")
+    SetupProjectFolders();
+
+    defaultApps = {
+        ApplicationInfo("Skyrim", projectPath + "/Icons/Skyrim_Logo.png", QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/My Games/Skyrim Special Edition/Skyrim.ini"),
+        ApplicationInfo("Witcher 3", projectPath + "/Icons/Witcher 3_Logo.png", "D:/QT Projects/ConfigurateProject//TestSaveFiles/witcherConfigTest.txt"),
+        ApplicationInfo("Sun Rings", projectPath + "/Icons/Sun Rings_Logo.png" , "D:/QT Projects/ConfigurateProject//TestSaveFiles/sunRingsTest.json"),
+        ApplicationInfo("Darkest Dungeon", projectPath + "/Icons/Darkest Dungeon_Logo.png", QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/Darkest/persist.options.json")
     };
 
-    SetupAppOptions(allApps);
+    SetupAppOptions(defaultApps);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+bool MainWindow::SetupProjectFolders() {
+    // Get app data path
+    projectPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+
+    // Rename the path
+    QStringList projectSplit = projectPath.split("/");
+    projectSplit.removeLast();
+    projectPath = "";
+
+    for (auto folder : projectSplit)
+        projectPath += folder + "/";
+
+    projectPath += "Configurate/";
+
+    if (!QDir(projectPath).exists())
+        QDir().mkdir(projectPath);
+
+    // Necessary Resource Folders
+    QStringList folders = { "Icons" };
+
+    // Create folders if they don't exist
+    for (auto folder : folders) {
+        auto path = projectPath + folder;
+
+        if (!QDir(path).exists())
+            QDir().mkdir(path);
+    }
+
+    // Populate folders with standard resources
+    QStringList defaultAppsNames = { "Skyrim", "Witcher 3", "Sun Rings", "Darkest Dungeon" };
+
+    for (auto app : defaultAppsNames) {
+        auto logoPath = app + "_Logo.png";
+        QFile::copy(":/Resources/Images/" + logoPath, projectPath + "/Icons/" + logoPath);
+    }
+
+
+    return true;
 }
 
 // ========= FUNCTIONS ==========
@@ -55,7 +97,7 @@ void MainWindow::SetupSettings(QString appName) {
 
     QString path = "";
 
-    for (auto app : allApps) {
+    for (auto app : defaultApps) {
         if (app.GetName() == appName) {
             currentApplication = app;
             break;

@@ -1,10 +1,11 @@
 <RCC>
     <qresource prefix="/Resources">
-        <file>Images/League_of_Legends_Logo.jpg</file>
-        <file>Images/Skyrim_Logo.jpg</file>
-        <file>Images/Witcher3_Logo.jpg</file>
         <file>TestSaveFiles/lolConfigTest.txt</file>
         <file>TestSaveFiles/witcherConfigTest.txt</file>
         <file>TestSaveFiles/skyrimConfigTest.ini</file>
+        <file>Images/Sun Rings_Logo.png</file>
+        <file>Images/Skyrim_Logo.png</file>
+        <file>Images/Witcher 3_Logo.png</file>
+        <file>Images/Darkest Dungeon_Logo.png</file>
     </qresource>
 </RCC>

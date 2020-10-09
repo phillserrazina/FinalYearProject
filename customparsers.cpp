@@ -2,7 +2,7 @@
 
 QMap<QString, QString> CustomParsers::Parse(QString filePath) {
     // Determine the type of file we're working with
-    QString fileType = filePath.split('.')[1];
+    QString fileType = QFileInfo(filePath).suffix();
 
     if (fileType == "ini") {
         QSettings iniFile(filePath, QSettings::IniFormat);
@@ -19,16 +19,13 @@ QMap<QString, QString> CustomParsers::Parse(QString filePath) {
 
         return ParseJson(doc);
     }
-    else if (fileType == "config") {
-        return ParseConfig();
-    }
 
     throw "Unsupported File Type";
 }
 
 void CustomParsers::Save(QString filePath, QMap<QString, QLineEdit*> currentParams) {
     // Determine the type of file we're working with
-    QString fileType = filePath.split('.')[1];
+    QString fileType = QFileInfo(filePath).suffix();
 
     if (fileType == "ini") {
         QSettings iniFile(filePath, QSettings::IniFormat);
@@ -45,9 +42,6 @@ void CustomParsers::Save(QString filePath, QMap<QString, QLineEdit*> currentPara
 
         SaveJson(jsonFile, doc, currentParams);
     }
-    else if (fileType == "config") {
-        SaveConfig();
-    }
     else
         throw "Unsupported File Type";
 }
@@ -58,30 +52,58 @@ QMap<QString, QString> CustomParsers::ParseJson(QJsonDocument &doc) {
     // Get jsonObject
     auto jsonObject = doc.object();
 
+    // Parse it and return the answer
+    return JsonParserHelper(jsonObject);
+}
+
+QMap<QString, QString> CustomParsers::JsonParserHelper(QJsonObject jsonObject) {
+    QMap<QString, QString> answer;
+
     // Convert jsonObject to a variantMap
     auto jsonMap = jsonObject.toVariantMap();
 
     // Convert string-variant to string-string map
-    for(auto key : jsonMap.keys())
+    for(auto key : jsonMap.keys()) {
+        QJsonValueRef val = jsonObject.find(key).value();
+
+        // TODO: DEBUG!!! REMOVE THIS
+        if (answer.count() > 15) return answer;
+
+        if (val.isObject()) {
+            auto obj = val.toObject();
+            auto map = JsonParserHelper(obj);
+
+            for (auto mapVal : map)
+                answer.insert(mapVal, map[mapVal]);
+
+            return map;
+        }
+
         answer.insert(key, jsonMap[key].toString());
+    }
 
     return answer;
 }
 
 QMap<QString, QString> CustomParsers::ParseIni(QSettings &file) {
     QMap<QString, QString> answer;
+    QVariant val;
 
     for (auto key : file.allKeys()) {
-        auto val = file.value(key);
-        key = key.split("/")[1];
-        answer.insert(key, val.toString());
+        try {
+            val = file.value(key);
+            auto keySplit = key.split("/");
+            if (keySplit.length() > 1)
+                key = keySplit[1];
+            answer.insert(key, val.toString());
+        }  catch (...) {
+            qDebug() << "Error on key " + key + " (" + val.toString() + ")";
+        }
+
+        // TODO: DEBUG!!! REMOVE THIS
+        if (answer.count() > 10) return answer;
     }
 
-    return answer;
-}
-
-QMap<QString, QString> CustomParsers::ParseConfig() {
-    QMap<QString, QString> answer;
     return answer;
 }
 
@@ -121,8 +143,4 @@ void CustomParsers::SaveIni(QSettings &file, QMap<QString, QLineEdit*> currentPa
 
         file.endGroup();
     }
-}
-
-void CustomParsers::SaveConfig() {
-
 }

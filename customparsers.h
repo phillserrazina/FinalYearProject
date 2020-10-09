@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
+#include <QFileInfo>
 
 class CustomParsers
 {
@@ -23,11 +25,11 @@ private:
     // FUNCTIONS
     static QMap<QString, QString> ParseJson(QJsonDocument&);
     static QMap<QString, QString> ParseIni(QSettings&);
-    static QMap<QString, QString> ParseConfig();
 
     static void SaveJson(QFile&, QJsonDocument&, QMap<QString, QLineEdit*>);
     static void SaveIni(QSettings&, QMap<QString, QLineEdit*>);
-    static void SaveConfig();
+
+    static QMap<QString, QString> JsonParserHelper(QJsonObject);
 };
 
 #endif // CUSTOMPARSERS_H

@@ -44,7 +44,9 @@ private:
     ApplicationInfo currentApplication;
     QMap<QString, QLineEdit*> parameterBoxesMap;
 
-    QVector<ApplicationInfo> allApps;
+    QVector<ApplicationInfo> defaultApps;
+
+    QString projectPath;
 
     // FUNCTIONS
 
@@ -57,6 +59,8 @@ private:
 
     void BuildSettingsWidget(QString);
     bool CheckLoadFileValidity(QFile&);
+
+    bool SetupProjectFolders();
 };
 
 #endif // MAINWINDOW_H
