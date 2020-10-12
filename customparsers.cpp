@@ -67,7 +67,7 @@ QMap<QString, QString> CustomParsers::JsonParserHelper(QJsonObject jsonObject) {
         QJsonValueRef val = jsonObject.find(key).value();
 
         // TODO: DEBUG!!! REMOVE THIS
-        if (answer.count() > 15) return answer;
+        // if (answer.count() > 15) return answer;
 
         if (val.isObject()) {
             auto obj = val.toObject();
@@ -101,7 +101,7 @@ QMap<QString, QString> CustomParsers::ParseIni(QSettings &file) {
         }
 
         // TODO: DEBUG!!! REMOVE THIS
-        if (answer.count() > 10) return answer;
+        // if (answer.count() > 15) return answer;
     }
 
     return answer;

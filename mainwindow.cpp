@@ -152,7 +152,7 @@ QHBoxLayout* MainWindow::CreateSettingLabel(QString settingName, QString setting
     parameterBoxesMap.insert(settingName, lineEdit);
 
     // Put them together in a layout
-    QHBoxLayout *layout = new QHBoxLayout;
+    QHBoxLayout *layout = new QHBoxLayout();
     layout->addWidget(label);
     layout->addWidget(lineEdit);
 
