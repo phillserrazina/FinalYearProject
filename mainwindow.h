@@ -12,6 +12,7 @@
 #include <QVector>
 #include <QStandardPaths>
 #include <QSignalMapper>
+#include <QDesktopServices>
 
 #include "customparsers.h"
 #include "applicationinfo.h"
@@ -36,6 +37,10 @@ private slots:
     void SetupSettings(QString);
 
     void on_loadButton_clicked();
+
+    void on_locationButton_clicked();
+
+    void on_closeButton_clicked();
 
 private:
     // VARIABLES

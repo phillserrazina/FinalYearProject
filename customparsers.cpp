@@ -69,14 +69,23 @@ QMap<QString, QString> CustomParsers::JsonParserHelper(QJsonObject jsonObject) {
         // TODO: DEBUG!!! REMOVE THIS
         // if (answer.count() > 15) return answer;
 
+        // If it is a regular object
         if (val.isObject()) {
             auto obj = val.toObject();
-            auto map = JsonParserHelper(obj);
+            return JsonParserHelper(obj);
+        }
 
-            for (auto mapVal : map)
-                answer.insert(mapVal, map[mapVal]);
+        // If it is an array
+        else if (val.isArray()) {
+            auto arr = val.toArray();
+            QString allArrayValues;
 
-            return map;
+            for (int i = 0; i < arr.size(); i++) {
+                const QJsonValue &value = arr[i];
+                allArrayValues += QString::number(value.toDouble()) + (i == arr.size() - 1 ? "" : ", ");
+            }
+
+            jsonMap[key] = allArrayValues;
         }
 
         answer.insert(key, jsonMap[key].toString());

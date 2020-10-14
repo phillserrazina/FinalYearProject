@@ -240,7 +240,7 @@ void MainWindow::on_saveAsButton_clicked() {
 void MainWindow::on_loadButton_clicked()
 {
     // Open desired file
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open"), "", tr("Text(*.txt);;All File(*)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open"), "", tr("ini(*.ini);;json(*.json);;All File(*)"));
     if (fileName.isEmpty()) return;
 
     // TODO: File match checks here
@@ -252,7 +252,6 @@ void MainWindow::on_loadButton_clicked()
         return;
     }
 
-
     if(!CheckLoadFileValidity(file)) {
         QMessageBox::warning(this, "Warning", "Invalid File Type: Games Do Not Match");
         file.close();
@@ -261,4 +260,21 @@ void MainWindow::on_loadButton_clicked()
 
     BuildSettingsWidget(fileName);
     file.close();
+}
+
+void MainWindow::on_locationButton_clicked()
+{
+    auto pathSplit = currentFile.split('/');
+    QString path;
+
+    for (int i = 0; i < pathSplit.length() - 1; i++) {
+        path += pathSplit[i] + "/";
+    }
+
+    QDesktopServices::openUrl( QUrl::fromLocalFile( path ) );
+}
+
+void MainWindow::on_closeButton_clicked()
+{
+    if (ui->settingsGroupBox->isVisible()) ui->settingsGroupBox->setVisible(false);
 }
