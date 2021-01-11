@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "QElapsedTimer"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -92,6 +93,10 @@ void MainWindow::ClearLayout(QLayout* layout) {
 }
 
 void MainWindow::SetupSettings(QString appName) {
+    qDebug() << "Creating settings for " << appName << "...";
+    QElapsedTimer timer;
+    timer.start();
+
     if (!ui->settingsGroupBox->isVisible()) ui->settingsGroupBox->setVisible(true);
     ui->settingsGroupBox->setTitle(appName);
 
@@ -106,9 +111,11 @@ void MainWindow::SetupSettings(QString appName) {
 
     path = currentApplication.GetFilePath();
     BuildSettingsWidget(path);
+
+    qDebug() << "Done. Took " << timer.elapsed() << " milliseconds to create\n";
 }
 
-void MainWindow::BuildSettingsWidget(QString filePath) {
+void MainWindow::BuildSettingsWidget(QString filePath) {    
     // Clear out current layout
     ClearLayout(ui->settingsLayout);
 
